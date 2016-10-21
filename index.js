@@ -38,13 +38,10 @@ io.on('connection', function(socket){
     });
 
     socket.emit('ranks',JSON.parse(fs.readFileSync("rank.json")));
-
-    socket.emit('region',process.env.MODULUS_REGION);
 });
 
 http.listen(process.env.PORT || 3000, function(){ // port = process.env.PORT
     console.log('listening on port: '+ process.env.PORT);
-    console.log('cloud directory: ' + process.env.CLOUD_DIR);
     try{
         console.log(JSON.parse(fs.readFileSync("rank.json")));
     }catch(err){

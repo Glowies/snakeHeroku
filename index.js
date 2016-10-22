@@ -2,50 +2,91 @@ var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io').listen(http);
 var fs = require('fs');
-//var port = 3000;
+var mongodb = require('mongodb');
+
+mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://glowies:1q4ogHrhg8I7@ds061206.mlab.com:61206/heroku_ls0g949q", function(err, db) {
+    mdb = db;
+    if (err) {
+        console.log('Unable to connect to MongoDB', err);
+    } else {
+        console.log('Connection established to MongoDB');
+        collection = db.collection('leaderboard');
+        collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
+            if(err){
+                console.log('Error finding in collection', err);
+            }else if(result.length){
+                console.log(result);
+            }else{
+                console.log('No doc in collection');
+            }
+        });
+        http.listen(process.env.PORT || 3000, function(){ // port = process.env.PORT
+            console.log('listening on port: '+ process.env.PORT || 3000);
+        });
+    }
+});
 
 io.on('connection', function(socket){
     console.log(' ID: ' + socket.id + ' connected from: ' + socket.request.connection.remoteAddress);
 
     socket.on('check highscore',function(data){
-        rank = JSON.parse(fs.readFileSync("rank.json"));
-        for(var i=1;i<6;i++){
-            if(rank[i.toString()].score<data.score){
-                for(var j=5;j>i;j--){
-                    rank[j.toString()] = rank[(j-1).toString()];
+        collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
+            if(err){
+                console.log('Error finding in collection', err);
+            }else if(result.length){
+                rank = result;
+                for(var i=0;i<5;i++){
+                    if(rank[i].score<data.score){
+                        for(var j=5;j>i;j--){
+                            collection.update({rank:j},rank[j-1]);
+                            rank[j] = rank[j-1];
+                        }
+                        collection.update({rank:i},{rank:i,name:data.name,score:data.score});
+                        rank[i] = {
+                            "name":data.name,
+                            "score":data.score
+                        };
+                        console.log('Rank '+(i+1)+' updated...\n'+data.name+' : '+data.score);
+
+                        break;
+                    }else if(rank[i].name == data.name){
+                        break;
+                    }
                 }
-                rank[i.toString()] = {
-                    "name":data.name,
-                    "score":data.score
-                };
-                console.log('Rank '+i+' updated...\n'+data.name+' : '+data.score);
-                fs.writeFileSync("rank.json",JSON.stringify(rank));
-                break;
-            }else if(rank[i.toString()].name == data.name){
-                break;
+                socket.emit('ranks',rank);
+            }else{
+                console.log('No doc in collection');
             }
-        }
-        socket.emit('ranks',rank);
+        });
     });
     
     socket.on('get ranks',function(){
-        socket.emit('ranks',JSON.parse(fs.readFileSync("rank.json")));
+        collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
+            if(err){
+                console.log('Error finding in collection', err);
+            }else if(result.length){
+                socket.emit('ranks',result);
+            }else{
+                console.log('No doc in collection');
+            }
+        });
     });
 
     socket.on('reset ranks',function(){
         console.log('Ranks reset...');
-        fs.writeFileSync("rank.json",JSON.stringify({"1":{"name":"Derp","score":0},"2":{"name":"Herp","score":0},"3":{"name":"Zerp","score":0},"4":{"name":"Kerp","score":0},"5":{"name":"Merp","score":0}}));
+        collection.remove({});
+        for(var i=0;i<5;i++){
+            collection.insert({name:"Derp",score:0,rank:i});
+        }
     });
 
-    socket.emit('ranks',JSON.parse(fs.readFileSync("rank.json")));
-});
-
-http.listen(process.env.PORT || 3000, function(){ // port = process.env.PORT
-    console.log('listening on port: '+ process.env.PORT);
-    try{
-        console.log(JSON.parse(fs.readFileSync("rank.json")));
-    }catch(err){
-        console.log(err);
-        fs.writeFileSync("rank.json",JSON.stringify({"1":{"name":"Derp","score":0},"2":{"name":"Herp","score":0},"3":{"name":"Zerp","score":0},"4":{"name":"Kerp","score":0},"5":{"name":"Merp","score":0}}));
-    }
+    collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
+        if(err){
+            console.log('Error finding in collection', err);
+        }else if(result.length){
+            socket.emit('ranks',result);
+        }else{
+            console.log('No doc in collection');
+        }
+    });
 });

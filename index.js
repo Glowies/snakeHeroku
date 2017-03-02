@@ -104,5 +104,5 @@ function resetRanks(){
 
 function poke(){
     console.log('Poke!');
-    setTimeout(poke,300000);
+    setTimeout(poke,59000);
 }

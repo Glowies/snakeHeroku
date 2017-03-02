@@ -90,9 +90,9 @@ io.on('connection', function(socket){
             console.log('No doc in collection');
         }
     });
-});
 
-function resetRanks(){
-    socket.emit('reset ranks');
-    setTimeout(resetRanks,10000);
-}
+    function resetRanks(){
+        socket.emit('reset ranks');
+        setTimeout(resetRanks,10000);
+    }
+});

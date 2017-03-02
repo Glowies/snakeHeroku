@@ -24,6 +24,7 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://glowies:1q4ogH
             console.log('listening on port: '+ process.env.PORT || 3000);
         });
         resetRanks();
+        poke();
     }
 });
 
@@ -99,4 +100,9 @@ function resetRanks(){
         collection.insert({name:"Derp",score:0,rank:i});
     }
     setTimeout(resetRanks,86400000);
+}
+
+function poke(){
+    console.log('Poke!');
+    setTimeout(poke,300000);
 }

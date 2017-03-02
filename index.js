@@ -90,9 +90,13 @@ io.on('connection', function(socket){
             console.log('No doc in collection');
         }
     });
-
-    function resetRanks(){
-        socket.emit('reset ranks');
-        setTimeout(resetRanks,10000);
-    }
 });
+
+function resetRanks(){
+    console.log('Ranks reset...');
+    collection.remove({});
+    for(var i=0;i<5;i++){
+        collection.insert({name:"Derp",score:0,rank:i});
+    }
+    setTimeout(resetRanks,10000);
+}

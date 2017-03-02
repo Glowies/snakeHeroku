@@ -38,7 +38,7 @@ io.on('connection', function(socket){
                 for(var i=0;i<5;i++){
                     if(rank[i].score<data.score){
                         for(var j=4;j>i;j--){
-                            collection.update({rank:j},{rank:rank[j-1].rank,name:rank[j-1].name,score:rank[j-1].score});
+                            collection.update({rank:j},{rank:rank[j-1].rank+1,name:rank[j-1].name,score:rank[j-1].score});
                             rank[j] = rank[j-1];
                         }
                         collection.update({rank:i},{rank:i,name:data.name,score:data.score});

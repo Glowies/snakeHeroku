@@ -23,7 +23,6 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://glowies:1q4ogH
         http.listen(process.env.PORT || 3000, function(){ // port = process.env.PORT
             console.log('listening on port: '+ process.env.PORT || 3000);
         });
-        resetRanks();
         poke();
     }
 });

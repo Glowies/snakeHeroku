@@ -92,15 +92,6 @@ io.on('connection', function(socket){
     });
 });
 
-function resetRanks(){
-    console.log('Ranks reset...');
-    collection.remove({});
-    for(var i=0;i<5;i++){
-        collection.insert({name:"Derp",score:0,rank:i});
-    }
-    setTimeout(resetRanks,86400000);
-}
-
 function poke(){
     console.log('Poke!');
     setTimeout(poke,59000);

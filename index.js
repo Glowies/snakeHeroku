@@ -126,6 +126,37 @@ io.on('connection', function(socket){
         console.log(data.name + " Has Been Suspended...");
     });
 
+    socket.on('check user',function(data){
+        var includes = 0;
+        collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result) {
+            if (err) {
+                console.log('Error finding in collection', err);
+            } else if (result.length) {
+                for(var i=0;i<result.length;i++){
+                    if(result[i].name == data){
+                        includes = 1;
+                    }
+                }
+            } else {
+                console.log('No doc in collection');
+            }
+        });
+        blacklistCol.find({}).toArray(function(err,result) {
+            if (err) {
+                console.log('Error finding in collection', err);
+            } else if (result.length) {
+                for(var i=0;i<result.length;i++){
+                    if(result[i].name == data){
+                        includes = 1;
+                    }
+                }
+            } else {
+                console.log('No doc in collection');
+            }
+        });
+        socket.emit('user return',!includes);
+    });
+
     collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
         if(err){
             console.log('Error finding in collection', err);

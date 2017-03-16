@@ -108,7 +108,7 @@ io.on('connection', function(socket){
             } else if (result.length) {
                 rank = result;
                 newRank = rank.slice(1, 5);
-                newRank.push({'rank': -1, 'name': 'Derp', 'score': 0});
+                newRank.push({'rank': 3, 'name': 'Derp', 'score': 0});
                 collection.remove({});
                 for (var i = 0; i < newRank.length; i++) {
                     newRank[i].rank++;

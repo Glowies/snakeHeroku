@@ -44,7 +44,7 @@ io.on('connection', function(socket){
                 }
 
                 if(includes){
-                    socket.emit('ranks',[{'name':'','score':-1,'rank':0},{'name':'YOU','score':-1,'rank':1},{'name':'HAVE','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
+                    socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
                 }else{
                     collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
                         if(err){

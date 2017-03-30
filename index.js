@@ -157,6 +157,25 @@ io.on('connection', function(socket){
         socket.emit('user return',!includes);
     });
 
+    socket.on('blacklist',function(data){
+        blacklistCol.find({}).toArray(function(err,result1){
+            if(err){
+                console.log('Error finding in collection', err);
+            }else if(result1.length){
+                var includes = 0;
+                for(var k=0;k<result1.length;k++){
+                    if(result1[k].name == data){
+                        includes = 1;
+                    }
+                }
+
+                socket.emit('blacklist',!includes);
+            }else{
+                console.log('No doc in blacklist collection');
+            }
+        });
+    });
+
     collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
         if(err){
             console.log('Error finding in collection', err);

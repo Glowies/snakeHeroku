@@ -48,6 +48,7 @@ io.on('connection', function(socket){
                 }else{
                     if(typeof data.p == "undefined"){
                         //SUSPEND
+                        socket.emit('ranks',[{'name':'THE','score':-1,'rank':0},{'name':'SERVER','score':-1,'rank':1},{'name':'IS','score':-1,'rank':2},{'name':'UNDER','score':-1,'rank':3},{'name':'MAINTENANCE','score':-1,'rank':4}]);
                     }else if(data.p+1 == data.score) {
                         collection.find({}, {limit: 5, sort: [["rank", "asc"]]}).toArray(function (err, result) {
                             if (err) {

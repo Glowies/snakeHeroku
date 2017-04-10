@@ -46,34 +46,44 @@ io.on('connection', function(socket){
                 if(includes){
                     socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
                 }else{
-                    collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
-                        if(err){
-                            console.log('Error finding in collection', err);
-                        }else if(result.length){
-                            rank = result;
-                            for(var i=0;i<5;i++){
-                                if(rank[i].score<data.score){
-                                    for(var j=4;j>i;j--){
-                                        collection.update({rank:j},{rank:j,name:rank[j-1].name,score:rank[j-1].score});
-                                        rank[j] = rank[j-1];
-                                    }
-                                    collection.update({rank:i},{rank:i,name:data.name,score:data.score});
-                                    rank[i] = {
-                                        "name":data.name,
-                                        "score":data.score
-                                    };
-                                    console.log('Rank '+(i+1)+' updated...\n'+data.name+' : '+data.score);
+                    if(typeof data.p == "undefined"){
+                        //SUSPEND
+                    }else if(data.p+1 == data.score) {
+                        collection.find({}, {limit: 5, sort: [["rank", "asc"]]}).toArray(function (err, result) {
+                            if (err) {
+                                console.log('Error finding in collection', err);
+                            } else if (result.length) {
+                                rank = result;
+                                for (var i = 0; i < 5; i++) {
+                                    if (rank[i].score < data.score) {
+                                        for (var j = 4; j > i; j--) {
+                                            collection.update({rank: j}, {
+                                                rank: j,
+                                                name: rank[j - 1].name,
+                                                score: rank[j - 1].score
+                                            });
+                                            rank[j] = rank[j - 1];
+                                        }
+                                        collection.update({rank: i}, {rank: i, name: data.name, score: data.score});
+                                        rank[i] = {
+                                            "name": data.name,
+                                            "score": data.score
+                                        };
+                                        console.log('Rank ' + (i + 1) + ' updated...\n' + data.name + ' : ' + data.score);
 
-                                    break;
-                                }else if(rank[i].name == data.name){
-                                    break;
+                                        break;
+                                    } else if (rank[i].name == data.name) {
+                                        break;
+                                    }
                                 }
+                                socket.emit('ranks', rank);
+                            } else {
+                                console.log('No doc in collection');
                             }
-                            socket.emit('ranks',rank);
-                        }else{
-                            console.log('No doc in collection');
-                        }
-                    });
+                        });
+                    }else{
+                        socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
+                    }
                 }
             }else{
                 console.log('No doc in blacklist collection');

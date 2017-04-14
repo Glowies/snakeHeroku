@@ -3,6 +3,9 @@ var http = require('http').createServer(app);
 var io = require('socket.io').listen(http);
 var fs = require('fs');
 var mongodb = require('mongodb');
+var GoogleAuth = require('google-auth-library');
+var auth = new GoogleAuth;
+var client = new auth.OAuth2("491250167307-58o5k8lnbal68vd1qlcbk64l5biqsjb8.apps.googleusercontent.com", '', '');
 
 mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://glowies:1q4ogHrhg8I7@ds061206.mlab.com:61206/heroku_ls0g949q", function(err, db) {
     mdb = db;
@@ -184,6 +187,14 @@ io.on('connection', function(socket){
             }else{
                 console.log('No doc in blacklist collection');
             }
+        });
+    });
+
+    socket.on('test id',function(data){
+        client.verifyIdToken(data, "491250167307-58o5k8lnbal68vd1qlcbk64l5biqsjb8.apps.googleusercontent.com", function(e, login) {
+            var payload = login.getPayload();
+            var userid = payload['sub'];
+            socket.emit('test id', payload);
         });
     });
 

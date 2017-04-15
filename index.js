@@ -198,7 +198,16 @@ io.on('connection', function(socket){
             console.log('STATUS: ' + res.statusCode);
             console.log('HEADERS: ' + JSON.stringify(res.headers));
 
-            console.log(res);
+            // Buffer the body entirely for processing as a whole.
+            var bodyChunks = [];
+            res.on('data', function(chunk) {
+                // You can process streamed parts here...
+                bodyChunks.push(chunk);
+            }).on('end', function() {
+                var body = Buffer.concat(bodyChunks);
+                console.log('BODY: ' + body);
+                // ...and/or process the entire body here.
+            })
         });
 
         req.on('error', function(e) {

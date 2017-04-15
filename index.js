@@ -1,11 +1,9 @@
 var app = require('express')();
+var https = require('https');
 var http = require('http').createServer(app);
 var io = require('socket.io').listen(http);
 var fs = require('fs');
 var mongodb = require('mongodb');
-var GoogleAuth = require('google-auth-library');
-var auth = new GoogleAuth;
-var client = new auth.OAuth2("491250167307-58o5k8lnbal68vd1qlcbk64l5biqsjb8.apps.googleusercontent.com", '', '');
 
 mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://glowies:1q4ogHrhg8I7@ds061206.mlab.com:61206/heroku_ls0g949q", function(err, db) {
     mdb = db;
@@ -191,12 +189,20 @@ io.on('connection', function(socket){
     });
 
     socket.on('test id',function(data){
-        client.verifyIdToken(data, "491250167307-58o5k8lnbal68vd1qlcbk64l5biqsjb8.apps.googleusercontent.com", function(e, login) {
-            var payload = login.getPayload();
-            var userid = payload['sub'];
-            console.log(payload);
-            console.log(userid);
-            socket.emit('test id', payload);
+        var options = {
+            host: 'www.googleapis.com',
+            path: '/oauth2/v1/tokeninfo?access_token=' + data
+        };
+
+        var req = https.get(options, function(res) {
+            console.log('STATUS: ' + res.statusCode);
+            console.log('HEADERS: ' + JSON.stringify(res.headers));
+
+            console.log(res);
+        });
+
+        req.on('error', function(e) {
+            console.log('ERROR: ' + e.message);
         });
     });
 

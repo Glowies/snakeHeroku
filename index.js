@@ -194,6 +194,8 @@ io.on('connection', function(socket){
         client.verifyIdToken(data, "491250167307-58o5k8lnbal68vd1qlcbk64l5biqsjb8.apps.googleusercontent.com", function(e, login) {
             var payload = login.getPayload();
             var userid = payload['sub'];
+            console.log(payload);
+            console.log(userid);
             socket.emit('test id', payload);
         });
     });

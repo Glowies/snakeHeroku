@@ -70,9 +70,18 @@ io.on('connection', function(socket){
                 if(includes){
                     socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
                 }else{
-                    if(tokeninfo.error == "invalid_token"){
-                        //SUSPEND
-                        socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'TOKEN','score':-1,'rank':2},{'name':'IS','score':-1,'rank':3},{'name':'INVALID','score':-1,'rank':4}]);
+                    if(typeof tokeninfo.error != "undefined"){
+                        if(tokeninfo.error == "invalid_token") {
+                            socket.emit('ranks', [{'name': 'YOUR', 'score': -1, 'rank': 0}, {
+                                'name': 'ACCOUNT',
+                                'score': -1,
+                                'rank': 1
+                            }, {'name': 'TOKEN', 'score': -1, 'rank': 2}, {
+                                'name': 'IS',
+                                'score': -1,
+                                'rank': 3
+                            }, {'name': 'INVALID', 'score': -1, 'rank': 4}]);
+                        }
                     }else if(tokeninfo.user_id) {
                         collection.find({}, {limit: 5, sort: [["rank", "asc"]]}).toArray(function (err, result) {
                             if (err) {

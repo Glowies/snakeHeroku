@@ -33,6 +33,30 @@ io.on('connection', function(socket){
     console.log(' ID: ' + socket.id + ' connected from: ' + socket.request.connection.remoteAddress);
 
     socket.on('check highscore',function(data){
+         var tokeninfo;
+         var req = https.get({
+             host: 'www.googleapis.com',
+             path: '/oauth2/v1/tokeninfo?access_token=' + data.token
+         }, function(res) {
+             // Buffer the body entirely for processing as a whole.
+             var bodyChunks = [];
+             res.on('data', function(chunk) {
+                 // You can process streamed parts here...
+                 bodyChunks.push(chunk);
+             }).on('end', function() {
+                 var body = Buffer.concat(bodyChunks);
+                 tokeninfo = JSON.parse(body);
+                 console.log(typeof tokeninfo);
+                 console.log(tokeninfo);
+                 console.log('Checking Highscore For ' + tokeninfo.id);
+                 // ...and/or process the entire body here.
+             })
+         });
+
+         req.on('error', function(e) {
+         console.log('ERROR: ' + e.message);
+         socket.emit('ranks',[{'name':'ERROR','score':-1,'rank':0},{'name':'VERIFYING','score':-1,'rank':1},{'name':'GOOGLE','score':-1,'rank':2},{'name':'OAUTH','score':-1,'rank':3},{'name':'TOKEN','score':-1,'rank':4}]);
+         });
         blacklistCol.find({}).toArray(function(err,result1){
             if(err){
                 console.log('Error finding in collection', err);
@@ -222,8 +246,3 @@ io.on('connection', function(socket){
         }
     });
 });
-
-function poke(){
-    console.log('Poke!');
-    setTimeout(poke,59000);
-}

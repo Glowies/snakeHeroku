@@ -33,6 +33,29 @@ io.on('connection', function(socket){
     console.log(' ID: ' + socket.id + ' connected from: ' + socket.request.connection.remoteAddress);
 
     socket.on('check highscore',function(data){
+        var tokeninfo;
+        var req = https.get({
+            host: 'www.googleapis.com',
+            path: '/oauth2/v1/tokeninfo?access_token=' + data.token
+        }, function(res) {
+            // Buffer the body entirely for processing as a whole.
+            var bodyChunks = [];
+            res.on('data', function(chunk) {
+                // You can process streamed parts here...
+                bodyChunks.push(chunk);
+            }).on('end', function() {
+                var body = Buffer.concat(bodyChunks);
+                tokeninfo = body;
+                console.log('Checking Highscore For ' + tokeninfo.id);
+                // ...and/or process the entire body here.
+            })
+        });
+
+        req.on('error', function(e) {
+            console.log('ERROR: ' + e.message);
+            socket.emit('ranks',[{'name':'ERROR','score':-1,'rank':0},{'name':'VERIFYING','score':-1,'rank':1},{'name':'GOOGLE','score':-1,'rank':2},{'name':'OAUTH','score':-1,'rank':3},{'name':'TOKEN','score':-1,'rank':4}]);
+        });
+
         blacklistCol.find({}).toArray(function(err,result1){
             if(err){
                 console.log('Error finding in collection', err);
@@ -47,10 +70,10 @@ io.on('connection', function(socket){
                 if(includes){
                     socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
                 }else{
-                    if(typeof data.test == "undefined"){
+                    if(tokeninfo.error = "invalid_token"){
                         //SUSPEND
-                        socket.emit('ranks',[{'name':'THE','score':-1,'rank':0},{'name':'SERVER','score':-1,'rank':1},{'name':'IS','score':-1,'rank':2},{'name':'UNDER','score':-1,'rank':3},{'name':'MAINTENANCE','score':-1,'rank':4}]);
-                    }else if(data.test+1 == data.score) {
+                        socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'TOKEN','score':-1,'rank':2},{'name':'IS','score':-1,'rank':3},{'name':'INVALID','score':-1,'rank':4}]);
+                    }else if(tokeninfo.id) {
                         collection.find({}, {limit: 5, sort: [["rank", "asc"]]}).toArray(function (err, result) {
                             if (err) {
                                 console.log('Error finding in collection', err);

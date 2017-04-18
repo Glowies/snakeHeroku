@@ -46,7 +46,9 @@ io.on('connection', function(socket){
                  var body = Buffer.concat(bodyChunks);
                  tokeninfo = JSON.parse(body);
                  console.log(typeof tokeninfo);
-                 console.log(tokeninfo);
+                 for(var key in tokeninfo){
+                     console.log(key);
+                 }
                  console.log('Checking Highscore For ' + tokeninfo.id);
                  // ...and/or process the entire body here.
              })
@@ -70,19 +72,11 @@ io.on('connection', function(socket){
                 if(includes){
                     socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
                 }else{
-                    if(typeof tokeninfo.error != "undefined"){
+                    if(0){
                         if(tokeninfo.error == "invalid_token") {
-                            socket.emit('ranks', [{'name': 'YOUR', 'score': -1, 'rank': 0}, {
-                                'name': 'ACCOUNT',
-                                'score': -1,
-                                'rank': 1
-                            }, {'name': 'TOKEN', 'score': -1, 'rank': 2}, {
-                                'name': 'IS',
-                                'score': -1,
-                                'rank': 3
-                            }, {'name': 'INVALID', 'score': -1, 'rank': 4}]);
+                            socket.emit('ranks', [{'name': 'YOUR', 'score': -1, 'rank': 0}, {'name': 'ACCOUNT', 'score': -1, 'rank': 1}, {'name': 'TOKEN', 'score': -1, 'rank': 2}, {'name': 'IS', 'score': -1, 'rank': 3}, {'name': 'INVALID', 'score': -1, 'rank': 4}]);
                         }
-                    }else if(tokeninfo.user_id) {
+                    }else if(1) {
                         collection.find({}, {limit: 5, sort: [["rank", "asc"]]}).toArray(function (err, result) {
                             if (err) {
                                 console.log('Error finding in collection', err);

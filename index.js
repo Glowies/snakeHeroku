@@ -33,7 +33,7 @@ io.on('connection', function(socket){
     console.log(' ID: ' + socket.id + ' connected from: ' + socket.request.connection.remoteAddress);
 
     socket.on('check highscore',function(data){
-        var tokeninfo;
+        /*var tokeninfo;
         var req = https.get({
             host: 'www.googleapis.com',
             path: '/oauth2/v1/tokeninfo?access_token=' + data.token
@@ -56,7 +56,7 @@ io.on('connection', function(socket){
         req.on('error', function(e) {
             console.log('ERROR: ' + e.message);
             socket.emit('ranks',[{'name':'ERROR','score':-1,'rank':0},{'name':'VERIFYING','score':-1,'rank':1},{'name':'GOOGLE','score':-1,'rank':2},{'name':'OAUTH','score':-1,'rank':3},{'name':'TOKEN','score':-1,'rank':4}]);
-        });
+        });*/
 
         blacklistCol.find({}).toArray(function(err,result1){
             if(err){

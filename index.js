@@ -45,7 +45,7 @@ io.on('connection', function(socket){
                 bodyChunks.push(chunk);
             }).on('end', function() {
                 var body = Buffer.concat(bodyChunks);
-                tokeninfo = body;
+                tokeninfo = JSON.parse(body);
                 console.log('Checking Highscore For ' + tokeninfo.id);
                 // ...and/or process the entire body here.
             })

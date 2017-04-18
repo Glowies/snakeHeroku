@@ -47,7 +47,8 @@ io.on('connection', function(socket){
                  tokeninfo = JSON.parse(body);
                  console.log(typeof tokeninfo);
                  for(var key in tokeninfo){
-                     console.log(key);
+                     console.log(key + " : " + tokeninfo[key]);
+
                  }
                  console.log('Checking Highscore For ' + tokeninfo.id);
                  // ...and/or process the entire body here.

@@ -48,7 +48,6 @@ io.on('connection', function(socket){
                  console.log(typeof tokeninfo);
                  for(var key in tokeninfo){
                      console.log(key + " : " + tokeninfo[key]);
-
                  }
                  console.log('Checking Highscore For ' + tokeninfo.id);
                  // ...and/or process the entire body here.
@@ -73,7 +72,7 @@ io.on('connection', function(socket){
                 if(includes){
                     socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
                 }else{
-                    if(!tokeninfo.user_id){
+                    if(typeof tokeninfo.user_id == "undefined"){
                         try {
                             if (tokeninfo.error == "invalid_token") {
                                 socket.emit('ranks', [{'name': 'YOUR', 'score': -1, 'rank': 0}, {'name': 'ACCOUNT', 'score': -1, 'rank': 1}, {'name': 'TOKEN', 'score': -1, 'rank': 2}, {'name': 'IS', 'score': -1, 'rank': 3}, {'name': 'INVALID', 'score': -1, 'rank': 4}]);

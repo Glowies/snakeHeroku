@@ -60,11 +60,7 @@ io.on('connection', function(socket){
              }).on('end', function() {
                  var body = Buffer.concat(bodyChunks);
                  tokeninfo = JSON.parse(body);
-                 console.log(typeof tokeninfo);
-                 for(var key in tokeninfo){
-                     console.log(key + " : " + tokeninfo[key]);
-                 }
-                 console.log('Checking Highscore For ' + tokeninfo.id);
+                 console.log('Checking Highscore For '+tokeninfo.email+' : ' + tokeninfo.user_id);
                  // ...and/or process the entire body here.
 
                  if(includes){

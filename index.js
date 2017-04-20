@@ -60,7 +60,6 @@ io.on('connection', function(socket){
              }).on('end', function() {
                  var body = Buffer.concat(bodyChunks);
                  tokeninfo = JSON.parse(body);
-                 console.log('Checking Highscore For '+tokeninfo.email+' : ' + tokeninfo.user_id);
                  // ...and/or process the entire body here.
 
                  if(includes){
@@ -83,21 +82,13 @@ io.on('connection', function(socket){
                                  rank = result;
                                  for (var i = 0; i < 5; i++) {
                                      if (rank[i].score < data.score) {
-                                         console.log('test');
                                          for (var j = 4; j > i; j--) {
-                                             collection.update({rank: j}, {
-                                                 rank: j,
-                                                 name: rank[j - 1].name,
-                                                 score: rank[j - 1].score
-                                             });
+                                             collection.update({rank: j}, {rank: j, name: rank[j - 1].name, score: rank[j - 1].score, id:rank[j - 1].id});
                                              rank[j] = rank[j - 1];
                                          }
-                                         collection.update({rank: i}, {rank: i, name: data.name, score: data.score});
-                                         rank[i] = {
-                                             "name": data.name,
-                                             "score": data.score
-                                         };
-                                         console.log('Rank ' + (i + 1) + ' updated...\n' + data.name + ' : ' + data.score);
+                                         collection.update({rank: i}, {rank: i, name: data.name, score: data.score, id: tokeninfo.user_id});
+                                         rank[i] = {"name": data.name, "score": data.score};
+                                         console.log('Rank ' + (i + 1) + ' updated...\n' + data.name + ', ' + tokeninfo.email + ' (' + tokeninfo.user_id + ') : ' + data.score);
 
                                          break;
                                      } else if (rank[i].name == data.name) {
@@ -136,7 +127,7 @@ io.on('connection', function(socket){
         console.log('Ranks reset...');
         collection.remove({});
         for(var i=0;i<5;i++){
-            collection.insert({name:"Derp",score:0,rank:i});
+            collection.insert({name:"Derp",score:0,rank:i,id:"1327"});
         }
     });
 

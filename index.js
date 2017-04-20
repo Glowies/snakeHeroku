@@ -83,6 +83,7 @@ io.on('connection', function(socket){
                                  rank = result;
                                  for (var i = 0; i < 5; i++) {
                                      if (rank[i].score < data.score) {
+                                         console.log('test');
                                          for (var j = 4; j > i; j--) {
                                              collection.update({rank: j}, {
                                                  rank: j,

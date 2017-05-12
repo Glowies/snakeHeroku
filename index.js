@@ -90,17 +90,15 @@ io.on('connection', function(socket){
                                      }
                                  }
                                  for (var i = 0; i < 5; i++) {
+                                     console.log(data);
                                      if (rank[i].score < data.score) {
-                                         console.log('ONE IS HERE');//REMOVE
                                          for (var j = 4; j > i; j--) {
                                              collection.update({rank: j}, {rank: j, name: rank[j - 1].name, score: rank[j - 1].score, id:rank[j - 1].id});
                                              rank[j] = rank[j - 1];
                                          }
-                                         console.log('TWO IS HERE');//REMOVE
                                          collection.update({rank: i}, {rank: i, name: data.name, score: data.score, id: tokeninfo.user_id});
                                          rank[i] = {"name": data.name, "score": data.score};
                                          console.log('Rank ' + (i + 1) + ' updated...\n' + data.name + ', ' + tokeninfo.email + ' (' + tokeninfo.user_id + ') : ' + data.score);
-                                         console.log('THREE IS HERE');//REMOVE
                                          break;
                                      } else if (rank[i].name == data.name) {
                                          break;

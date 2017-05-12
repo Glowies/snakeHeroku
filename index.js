@@ -80,6 +80,16 @@ io.on('connection', function(socket){
                                  console.log('Error finding in collection', err);
                              } else if (result.length) {
                                  rank = result;
+                                 var nameExists = 0;
+                                 for(var i=0;i<rank.length;i++){
+                                     if(rank[i].name == data.name && rank[i].score < data.score){
+                                         for(var j=i+1;j<rank.length;j++){
+                                             rank[j].rank--;
+                                         }
+                                         delete rank[i];
+                                         newRank.push({'rank': 5, 'name': 'Derp', 'score': 0});
+                                     }
+                                 }
                                  for (var i = 0; i < 5; i++) {
                                      if (rank[i].score < data.score) {
                                          for (var j = 4; j > i; j--) {

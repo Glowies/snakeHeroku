@@ -80,27 +80,27 @@ io.on('connection', function(socket){
                                  console.log('Error finding in collection', err);
                              } else if (result.length) {
                                  rank = result;
-                                 var nameExists = 0;
                                  for(var i=0;i<rank.length;i++){
-                                     if(rank[i].name == data.name && rank[i].score < data.score){
+                                     if(rank[i].id == tokeninfo.user_id && rank[i].score < data.score){
                                          for(var j=i+1;j<rank.length;j++){
                                              rank[j].rank--;
                                          }
                                          delete rank[i];
                                          rank.push({'rank': 4, 'name': 'Derp', 'score': 0,'id':1327});
-                                         console.log(rank);
                                      }
                                  }
                                  for (var i = 0; i < 5; i++) {
                                      if (rank[i].score < data.score) {
+                                         console.log('ONE IS HERE');//REMOVE
                                          for (var j = 4; j > i; j--) {
                                              collection.update({rank: j}, {rank: j, name: rank[j - 1].name, score: rank[j - 1].score, id:rank[j - 1].id});
                                              rank[j] = rank[j - 1];
                                          }
+                                         console.log('TWO IS HERE');//REMOVE
                                          collection.update({rank: i}, {rank: i, name: data.name, score: data.score, id: tokeninfo.user_id});
                                          rank[i] = {"name": data.name, "score": data.score};
                                          console.log('Rank ' + (i + 1) + ' updated...\n' + data.name + ', ' + tokeninfo.email + ' (' + tokeninfo.user_id + ') : ' + data.score);
-
+                                         console.log('THREE IS HERE');//REMOVE
                                          break;
                                      } else if (rank[i].name == data.name) {
                                          break;

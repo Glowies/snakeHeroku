@@ -90,7 +90,7 @@ io.on('connection', function(socket){
                                      }
                                  }
                                  for (var i = 0; i < 5; i++) {
-                                     console.log(data);
+                                     console.log(rank[i]);
                                      if (rank[i].score < data.score) {
                                          for (var j = 4; j > i; j--) {
                                              collection.update({rank: j}, {rank: j, name: rank[j - 1].name, score: rank[j - 1].score, id:rank[j - 1].id});

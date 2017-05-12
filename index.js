@@ -87,7 +87,7 @@ io.on('connection', function(socket){
                                              rank[j].rank--;
                                          }
                                          delete rank[i];
-                                         newRank.push({'rank': 5, 'name': 'Derp', 'score': 0});
+                                         rank.push({'rank': 5, 'name': 'Derp', 'score': 0});
                                      }
                                  }
                                  for (var i = 0; i < 5; i++) {

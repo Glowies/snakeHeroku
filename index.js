@@ -87,7 +87,7 @@ io.on('connection', function(socket){
                                              rank[j].rank--;
                                          }
                                          delete rank[i];
-                                         rank.push({'rank': 5, 'name': 'Derp', 'score': 0});
+                                         rank.push({'rank': 5, 'name': 'Derp', 'score': 0,'id':1327});
                                      }
                                  }
                                  for (var i = 0; i < 5; i++) {
@@ -148,7 +148,7 @@ io.on('connection', function(socket){
             } else if (result.length) {
                 rank = result;
                 newRank = rank.slice(1, 5);
-                newRank.push({'rank': 5, 'name': 'Derp', 'score': 0});
+                newRank.push({'rank': 5, 'name': 'Derp', 'score': 0,'id':1327});
                 collection.remove({});
                 for (var i = 0; i < newRank.length; i++) {
                     newRank[i].rank--;

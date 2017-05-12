@@ -88,6 +88,7 @@ io.on('connection', function(socket){
                                          }
                                          delete rank[i];
                                          rank.push({'rank': 5, 'name': 'Derp', 'score': 0,'id':1327});
+                                         console.log(rank);
                                      }
                                  }
                                  for (var i = 0; i < 5; i++) {

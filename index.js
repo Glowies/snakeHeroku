@@ -81,7 +81,6 @@ io.on('connection', function(socket){
                              } else if (result.length) {
                                  rank = result;
                                  for(var i=0;i<rank.length;i++){
-                                     console.log(rank[i]);
                                      if(rank[i].id == tokeninfo.user_id && rank[i].score < data.score){
                                          for(var j=i+1;j<rank.length;j++){
                                              rank[j].rank--;
@@ -89,7 +88,7 @@ io.on('connection', function(socket){
                                          }
                                          delete rank[rank.length-1];
                                          rank.push({'rank': 4, 'name': 'Derp', 'score': 0,'id':1327});
-                                         console.log(rank);
+                                         break;
                                      }
                                  }
                                  for (var i = 0; i < 5; i++) {

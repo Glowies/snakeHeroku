@@ -81,6 +81,7 @@ io.on('connection', function(socket){
                              } else if (result.length) {
                                  rank = result;
                                  for(var i=0;i<rank.length;i++){
+                                     console.log(rank[i]);
                                      if(rank[i].id == tokeninfo.user_id && rank[i].score < data.score){
                                          for(var j=i+1;j<rank.length;j++){
                                              rank[j].rank--;

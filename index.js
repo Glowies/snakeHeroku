@@ -50,7 +50,28 @@ io.on('connection', function(socket){
         if(includes){
             socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
         }else{
-            collection.update({name: data.name}, {name: data.name, score: data.score, id: 0});
+            collection.find({"name":data.name}).toArray(function(err,result){
+                if(err){
+                    console.log('Error finding in collection', err);
+                }else if(result.length){
+                    if(result[0].score < data.score){
+                        collection.update({name: data.name}, {name: data.name, score: data.score, id: 0});
+                    }
+                }
+                else{
+                    console.log('No doc in collection');
+                }
+            });
+
+            collection.find({},{limit:5,sort:[["score","descending"]]}).toArray(function(err,result){
+                if(err){
+                    console.log('Error finding in collection', err);
+                }else if(result.length){
+                    socket.emit('ranks',result);
+                }else{
+                    console.log('No doc in collection');
+                }
+            });
         }
 
     });
@@ -77,26 +98,6 @@ io.on('connection', function(socket){
         collection.insert({name:"Berp",score:-5,id:"0"});
     });
 
-    socket.on('remove rank',function(){
-        collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result) {
-            if (err) {
-                console.log('Error finding in collection', err);
-            } else if (result.length) {
-                rank = result;
-                newRank = rank.slice(1, 5);
-                newRank.push({'rank': 4, 'name': 'Derp', 'score': 0,'id':1327});
-                collection.remove({});
-                for (var i = 0; i < newRank.length; i++) {
-                    newRank[i].rank--;
-                    collection.insert(newRank[i]);
-                }
-                socket.emit('ranks', newRank);
-            } else {
-                console.log('No doc in collection');
-            }
-        });
-    });
-
     socket.on('suspend',function(data){
         blacklistCol.insert({'name':data.name});
         console.log(data.name + " Has Been Suspended...");
@@ -104,7 +105,7 @@ io.on('connection', function(socket){
 
     socket.on('check user',function(data){
         var includes = 0;
-        collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result) {
+        collection.find({}).toArray(function(err,result) {
             if (err) {
                 console.log('Error finding in collection', err);
             } else if (result.length) {
@@ -117,6 +118,7 @@ io.on('connection', function(socket){
                 console.log('No doc in collection');
             }
         });
+
         blacklistCol.find({}).toArray(function(err,result) {
             if (err) {
                 console.log('Error finding in collection', err);
@@ -130,6 +132,9 @@ io.on('connection', function(socket){
                 console.log('No doc in collection');
             }
         });
+        if(!includes){
+            collection.insert({name:data, score:0, id:"0"});
+        }
         socket.emit('user return',!includes);
     });
 
@@ -149,30 +154,6 @@ io.on('connection', function(socket){
             }else{
                 console.log('No doc in blacklist collection');
             }
-        });
-    });
-
-    socket.on('test id',function(data){
-        var userid;
-        var req = https.get({
-            host: 'www.googleapis.com',
-            path: '/oauth2/v1/tokeninfo?access_token=' + data
-        }, function(res) {
-            // Buffer the body entirely for processing as a whole.
-            var bodyChunks = [];
-            res.on('data', function(chunk) {
-                // You can process streamed parts here...
-                bodyChunks.push(chunk);
-            }).on('end', function() {
-                var body = Buffer.concat(bodyChunks);
-                userid = body;
-                console.log('Token Verification: ' + body);
-                // ...and/or process the entire body here.
-            })
-        });
-
-        req.on('error', function(e) {
-            console.log('ERROR: ' + e.message);
         });
     });
 

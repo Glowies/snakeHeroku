@@ -62,7 +62,9 @@ io.on('connection', function(socket){
                                 rank[j-1] = rank[j];
                             }
                             delete rank[rank.length-1];
+                            console.log(rank);
                             rank.push({'rank': 4, 'name': 'Derp', 'score': 0,'id':0});
+                            console.log(rank);
                             break;
                         }
                     }
@@ -105,7 +107,7 @@ io.on('connection', function(socket){
         console.log('Ranks reset...');
         collection.remove({});
         for(var i=0;i<5;i++){
-            collection.insert({name:"Derp",score:i-5,rank:i,id:"0"});
+            collection.insert({name:"Derp",score:-i,rank:i,id:"0"});
         }
     });
 

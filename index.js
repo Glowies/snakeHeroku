@@ -47,78 +47,46 @@ io.on('connection', function(socket){
             }
         });
 
-         var tokeninfo;
-         var req = https.get({
-             host: 'www.googleapis.com',
-             path: '/oauth2/v1/tokeninfo?access_token=' + data.token
-         }, function(res) {
-             // Buffer the body entirely for processing as a whole.
-             var bodyChunks = [];
-             res.on('data', function(chunk) {
-                 // You can process streamed parts here...
-                 bodyChunks.push(chunk);
-             }).on('end', function() {
-                 var body = Buffer.concat(bodyChunks);
-                 tokeninfo = JSON.parse(body);
-                 // ...and/or process the entire body here.
+        if(includes){
+            socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
+        }else{
+            collection.find({}, {limit: 5, sort: [["rank", "asc"]]}).toArray(function (err, result) {
+                if (err) {
+                    console.log('Error finding in collection', err);
+                } else if (result.length) {
+                    rank = result;
+                    for(var i=0; i<rank.length; i++){
+                        if(rank[i].score < data.score){
+                            for(var j=i+1;j<rank.length;j++){
+                                rank[j].rank--;
+                                rank[j-1] = rank[j];
+                            }
+                            delete rank[rank.length-1];
+                            rank.push({'rank': 4, 'name': 'Derp', 'score': 0,'id':0});
+                            break;
+                        }
+                    }
+                    for (var i=0; i<5; i++) {
+                        if (rank[i].score < data.score) {
+                            for (var j = 4; j > i; j--) {
+                                collection.update({rank: j}, {rank: j, name: rank[j - 1].name, score: rank[j - 1].score, id:rank[j - 1].id});
+                                rank[j] = rank[j - 1];
+                            }
+                            collection.update({rank: i}, {rank: i, name: data.name, score: data.score, id: 0});
+                            rank[i] = {"name": data.name, "score": data.score};
+                            console.log('Rank ' + (i + 1) + ' updated...\n' + data.name + ' : ' + data.score);
+                            break;
+                        } else if (rank[i].name == data.name) {
+                            break;
+                        }
+                    }
+                    socket.emit('ranks', rank);
+                } else {
+                    console.log('No doc in collection');
+                }
+            });
+        }
 
-                 if(includes){
-                     socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
-                 }else{
-                     if(typeof tokeninfo.user_id == "undefined"){
-                         try {
-                             if (tokeninfo.error == "invalid_token") {
-                                 socket.emit('ranks', [{'name': 'YOUR', 'score': -1, 'rank': 0}, {'name': 'ACCOUNT', 'score': -1, 'rank': 1}, {'name': 'TOKEN', 'score': -1, 'rank': 2}, {'name': 'IS', 'score': -1, 'rank': 3}, {'name': 'INVALID', 'score': -1, 'rank': 4}]);
-                             }
-                         }catch(err){
-                             socket.emit('ranks', [{'name': 'ERROR', 'score': -1, 'rank': 0}, {'name': 'RETRIEVING', 'score': -1, 'rank': 1}, {'name': 'GOOGLE', 'score': -1, 'rank': 2}, {'name': 'TOKEN', 'score': -1, 'rank': 3}, {'name': 'INFORMATION', 'score': -1, 'rank': 4}]);
-                             console.log(err)
-                         }
-                     }else{
-                         collection.find({}, {limit: 5, sort: [["rank", "asc"]]}).toArray(function (err, result) {
-                             if (err) {
-                                 console.log('Error finding in collection', err);
-                             } else if (result.length) {
-                                 rank = result;
-                                 for(var i=0;i<rank.length;i++){
-                                     if(rank[i].id == tokeninfo.user_id && rank[i].score < data.score){
-                                         for(var j=i+1;j<rank.length;j++){
-                                             rank[j].rank--;
-                                             rank[j-1] = rank[j];
-                                         }
-                                         delete rank[rank.length-1];
-                                         rank.push({'rank': 4, 'name': 'Derp', 'score': 0,'id':1327});
-                                         break;
-                                     }
-                                 }
-                                 for (var i = 0; i < 5; i++) {
-                                     if (rank[i].score < data.score) {
-                                         for (var j = 4; j > i; j--) {
-                                             collection.update({rank: j}, {rank: j, name: rank[j - 1].name, score: rank[j - 1].score, id:rank[j - 1].id});
-                                             rank[j] = rank[j - 1];
-                                         }
-                                         collection.update({rank: i}, {rank: i, name: data.name, score: data.score, id: tokeninfo.user_id});
-                                         rank[i] = {"name": data.name, "score": data.score};
-                                         console.log('Rank ' + (i + 1) + ' updated...\n' + data.name + ', ' + tokeninfo.email + ' (' + tokeninfo.user_id + ') : ' + data.score);
-                                         break;
-                                     } else if (rank[i].name == data.name) {
-                                         break;
-                                     }
-                                 }
-                                 socket.emit('ranks', rank);
-                             } else {
-                                 console.log('No doc in collection');
-                             }
-                         });
-                     }
-                 }
-             })
-         });
-
-         req.on('error', function(e) {
-         console.log('ERROR: ' + e.message);
-         socket.emit('ranks',[{'name':'ERROR','score':-1,'rank':0},{'name':'VERIFYING','score':-1,'rank':1},{'name':'GOOGLE','score':-1,'rank':2},{'name':'OAUTH','score':-1,'rank':3},{'name':'TOKEN','score':-1,'rank':4}]);
-         });
     });
     
     socket.on('get ranks',function(){

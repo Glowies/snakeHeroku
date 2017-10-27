@@ -56,7 +56,7 @@ io.on('connection', function(socket){
     });
     
     socket.on('get ranks',function(){
-        collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
+        collection.find({},{limit:5,sort:[["score","des"]]}).toArray(function(err,result){
             if(err){
                 console.log('Error finding in collection', err);
             }else if(result.length){
@@ -70,9 +70,11 @@ io.on('connection', function(socket){
     socket.on('reset ranks',function(){
         console.log('Ranks reset...');
         collection.remove({});
-        for(var i=0;i<5;i++){
-            collection.insert({name:"Derp",score:-i,rank:i,id:"0"});
-        }
+        collection.insert({name:"Derp",score:-1,id:"0"});
+        collection.insert({name:"Herp",score:-2,id:"0"});
+        collection.insert({name:"Gerp",score:-3,id:"0"});
+        collection.insert({name:"Zerp",score:-4,id:"0"});
+        collection.insert({name:"Berp",score:-5,id:"0"});
     });
 
     socket.on('remove rank',function(){
@@ -174,7 +176,7 @@ io.on('connection', function(socket){
         });
     });
 
-    collection.find({},{limit:5,sort:[["rank","asc"]]}).toArray(function(err,result){
+    collection.find({},{limit:5,sort:[["score","des"]]}).toArray(function(err,result){
         if(err){
             console.log('Error finding in collection', err);
         }else if(result.length){

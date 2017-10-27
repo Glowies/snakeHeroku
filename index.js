@@ -105,7 +105,7 @@ io.on('connection', function(socket){
         console.log('Ranks reset...');
         collection.remove({});
         for(var i=0;i<5;i++){
-            collection.insert({name:"Derp",score:0,rank:i,id:"1327"});
+            collection.insert({name:"Derp",score:i-5,rank:i,id:"0"});
         }
     });
 

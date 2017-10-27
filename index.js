@@ -109,10 +109,11 @@ io.on('connection', function(socket){
         collection.find({}).toArray(function(err,result) {
             if(err){
                 console.log('Error finding in collection', err);
-            } else if (result.length){
+            }else if (result.length){
                 for(var i=0;i<result.length;i++){
                     console.log(result[i].name);
                     if(result[i].name == data){
+                        console.log("TEST");
                         includes = 1;
                     }
                 }
@@ -120,6 +121,7 @@ io.on('connection', function(socket){
                 console.log('No doc in collection');
             }
         });
+        console.log(includes);
 
         blacklistCol.find({}).toArray(function(err,result) {
             if (err) {

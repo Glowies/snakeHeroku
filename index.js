@@ -61,6 +61,7 @@ io.on('connection', function(socket){
                                 rank[j].rank--;
                                 rank[j-1] = rank[j];
                             }
+                            console.log(rank);
                             delete rank[rank.length-1];
                             console.log(rank);
                             rank.push({'rank': 4, 'name': 'Derp', 'score': 0,'id':0});

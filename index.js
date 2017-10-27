@@ -104,42 +104,39 @@ io.on('connection', function(socket){
     });
 
     socket.on('check user',function(data){
-        console.log("Checking user: " + data);
         var includes = 0;
         collection.find({}).toArray(function(err,result) {
             if(err){
                 console.log('Error finding in collection', err);
             }else if (result.length){
                 for(var i=0;i<result.length;i++){
-                    console.log(result[i].name);
                     if(result[i].name == data){
-                        console.log("TEST");
                         includes = 1;
                     }
                 }
-            } else {
-                console.log('No doc in collection');
-            }
-        });
-        console.log(includes);
 
-        blacklistCol.find({}).toArray(function(err,result) {
-            if (err) {
-                console.log('Error finding in collection', err);
-            } else if (result.length) {
-                for(var i=0;i<result.length;i++){
-                    if(result[i].name == data){
-                        includes = 1;
+                blacklistCol.find({}).toArray(function(err,result) {
+                    if (err) {
+                        console.log('Error finding in collection', err);
+                    } else if (result.length) {
+                        for(var i=0;i<result.length;i++){
+                            if(result[i].name == data){
+                                includes = 1;
+                            }
+                        }
+
+                        if(!includes){
+                            collection.insert({name:data, score:0, id:"0"});
+                        }
+                        socket.emit('user return',!includes);
+                    } else {
+                        console.log('No doc in collection');
                     }
-                }
+                });
             } else {
                 console.log('No doc in collection');
             }
         });
-        if(!includes){
-            collection.insert({name:data, score:0, id:"0"});
-        }
-        socket.emit('user return',!includes);
     });
 
     socket.on('blacklist',function(data){

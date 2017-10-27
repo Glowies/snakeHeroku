@@ -50,44 +50,7 @@ io.on('connection', function(socket){
         if(includes){
             socket.emit('ranks',[{'name':'YOUR','score':-1,'rank':0},{'name':'ACCOUNT','score':-1,'rank':1},{'name':'HAS','score':-1,'rank':2},{'name':'BEEN','score':-1,'rank':3},{'name':'SUSPENDED','score':-1,'rank':4}]);
         }else{
-            collection.find({}, {limit: 5, sort: [["rank", "asc"]]}).toArray(function (err, result) {
-                if (err) {
-                    console.log('Error finding in collection', err);
-                } else if (result.length) {
-                    rank = result;
-                    for(var i=0; i<rank.length; i++){
-                        if(rank[i].score < data.score){
-                            for(var j=i+1;j<rank.length;j++){
-                                rank[j].rank--;
-                                rank[j-1] = rank[j];
-                            }
-                            console.log(rank);
-                            delete rank[rank.length-1];
-                            console.log(rank);
-                            rank.push({'rank': 4, 'name': 'Derp', 'score': 0,'id':0});
-                            console.log(rank);
-                            break;
-                        }
-                    }
-                    for (var i=0; i<5; i++) {
-                        if (rank[i].score < data.score) {
-                            for (var j = 4; j > i; j--) {
-                                collection.update({rank: j}, {rank: j, name: rank[j - 1].name, score: rank[j - 1].score, id:rank[j - 1].id});
-                                rank[j] = rank[j - 1];
-                            }
-                            collection.update({rank: i}, {rank: i, name: data.name, score: data.score, id: 0});
-                            rank[i] = {"name": data.name, "score": data.score};
-                            console.log('Rank ' + (i + 1) + ' updated...\n' + data.name + ' : ' + data.score);
-                            break;
-                        } else if (rank[i].name == data.name) {
-                            break;
-                        }
-                    }
-                    socket.emit('ranks', rank);
-                } else {
-                    console.log('No doc in collection');
-                }
-            });
+            collection.update({name: data.name}, {name: data.name, score: data.score, id: 0});
         }
 
     });

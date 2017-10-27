@@ -104,12 +104,14 @@ io.on('connection', function(socket){
     });
 
     socket.on('check user',function(data){
+        console.log("Checking user: " + data);
         var includes = 0;
         collection.find({}).toArray(function(err,result) {
-            if (err) {
+            if(err){
                 console.log('Error finding in collection', err);
-            } else if (result.length) {
+            } else if (result.length){
                 for(var i=0;i<result.length;i++){
+                    console.log(result[i].name);
                     if(result[i].name == data){
                         includes = 1;
                     }

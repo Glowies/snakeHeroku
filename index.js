@@ -57,18 +57,17 @@ io.on('connection', function(socket){
                     if(result[0].score < data.score){
                         collection.update({name: data.name}, {name: data.name, score: data.score, id: 0});
                     }
+                    collection.find({},{limit:5,sort:[["score","descending"]]}).toArray(function(err,result){
+                        if(err){
+                            console.log('Error finding in collection', err);
+                        }else if(result.length){
+                            socket.emit('ranks',result);
+                        }else{
+                            console.log('No doc in collection');
+                        }
+                    });
                 }
                 else{
-                    console.log('No doc in collection');
-                }
-            });
-
-            collection.find({},{limit:5,sort:[["score","descending"]]}).toArray(function(err,result){
-                if(err){
-                    console.log('Error finding in collection', err);
-                }else if(result.length){
-                    socket.emit('ranks',result);
-                }else{
                     console.log('No doc in collection');
                 }
             });
@@ -151,7 +150,7 @@ io.on('connection', function(socket){
                     }
                 }
 
-                socket.emit('blacklist',!includes);
+                socket.emit('blacklist', !includes);
             }else{
                 console.log('No doc in blacklist collection');
             }

@@ -31,6 +31,8 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://glowies:1q4ogH
 io.on('connection', function(socket){
     console.log(' ID: ' + socket.id + ' connected from: ' + socket.request.connection.remoteAddress);
 
+    socket.emit('connection check',true);
+
     socket.on('check highscore',function(data){
         var includes = 0;
         blacklistCol.find({}).toArray(function(err,result1){
